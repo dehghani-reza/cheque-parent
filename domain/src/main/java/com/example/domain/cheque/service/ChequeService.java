@@ -6,4 +6,5 @@ public interface ChequeService {
 
 	Cheque persist(Cheque cheque);
 
+	Boolean present(Long id);
 }

@@ -33,8 +33,7 @@ public class ChequeResource {
 	}
 
 	@PostMapping("/{id}/present")
-	public ResponseEntity<Void> present(@PathVariable("id") Long id) {
-		return ResponseEntity.ok()
-				.build();
+	public ResponseEntity<Boolean> present(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(service.present(id));
 	}
 }

@@ -1,13 +1,13 @@
 package com.example.account;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.math.BigDecimal;
 
-import com.example.config.InfraConfig;
+import com.example.domain.account.Account;
+import com.example.domain.account.AccountStatus;
 import com.example.domain.account.repository.AccountRepository;
 import com.example.domain.account.service.AccountService;
-import com.example.domain.cheque.BounceRecord;
 import com.example.domain.cheque.service.BounceRecordService;
+import com.example.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
 
-	private final InfraConfig config;
-
 	private final BounceRecordService bounceRecordService;
 
 	private final AccountRepository accountRepository;
@@ -27,9 +25,43 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public boolean eligibleForChequeDrawer(Long accountId) {
 		accountRepository.findById(accountId);
-		LocalDate now = LocalDate.now();
-		List<BounceRecord> list = bounceRecordService
-				.findAccountBounceInRange(accountId, now.minusMonths(config.getMaxChequeRangeMonth()), now);
-		return list.size() < config.getMaxChequeBounce();
+		return bounceRecordService.isAccountBlockedBecauseOfBounce(accountId);
+	}
+
+	@Override
+	public void block(Long accountId) {
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new BusinessException("ACCOUNT NOT EXISTS"));
+		account.setStatus(AccountStatus.BLOCKED);
+		accountRepository.save(account);
+	}
+
+	@Override
+	public void subtractMoney(Long accountId, BigDecimal amount) {
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new BusinessException("ACCOUNT NOT EXISTS"));
+		checkSubtraction(account, amount);
+		account.setBalance(account.getBalance()
+				.subtract(amount));
+		accountRepository.save(account);
+	}
+
+	private void checkSubtraction(Account account, BigDecimal amount) {
+		checkAccount(account);
+		checkAmountForSubtraction(account, amount);
+	}
+
+	private void checkAmountForSubtraction(Account account, BigDecimal amount) {
+		if (account.getBalance()
+				.compareTo(amount) <= 0) {
+			throw new BusinessException("ACCOUNT INSUFFICIENT");
+		}
+	}
+
+	private void checkAccount(Account account) {
+		if (!account.getStatus()
+				.equals(AccountStatus.ACTIVE)) {
+			throw new BusinessException("ACCOUNT INACTIVE");
+		}
 	}
 }

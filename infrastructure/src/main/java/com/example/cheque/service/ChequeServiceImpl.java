@@ -4,12 +4,15 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import com.example.client.SayadClient;
-import com.example.exception.BusinessException;
+import com.example.config.InfraConfig;
 import com.example.domain.account.service.AccountService;
+import com.example.domain.cheque.BounceRecord;
 import com.example.domain.cheque.Cheque;
 import com.example.domain.cheque.ChequeStatus;
 import com.example.domain.cheque.repository.ChequeRepository;
+import com.example.domain.cheque.service.BounceRecordService;
 import com.example.domain.cheque.service.ChequeService;
+import com.example.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,9 +23,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class ChequeServiceImpl implements ChequeService {
 
+	private final InfraConfig config;
+
 	private final SayadClient sayadClient;
 
 	private final AccountService accountService;
+
+	private final BounceRecordService bounceRecordService;
 
 	private final ChequeRepository chequeRepository;
 
@@ -33,6 +40,47 @@ public class ChequeServiceImpl implements ChequeService {
 		log.debug("going to persist cheque: {}", cheque);
 		sayadClient.issue(cheque);
 		return chequeRepository.save(cheque);
+	}
+
+	@Override
+	public Boolean present(Long id) {
+		Cheque cheque = chequeRepository.findById(id)
+				.orElseThrow(() -> new BusinessException("cheque not present"));
+		validatePresentRule(cheque);
+		accountService.subtractMoney(cheque.getDrawer().getId(), cheque.getAmount());
+		cheque.setStatus(ChequeStatus.PAID);
+		chequeRepository.save(cheque);
+		return true;
+	}
+
+	private void validatePresentRule(Cheque cheque) {
+		validateIssueDate(cheque);
+		validateAccountBalance(cheque);
+	}
+
+	private void validateAccountBalance(Cheque cheque) {
+		if (cheque.getAmount()
+				.compareTo(cheque.getDrawer()
+						.getBalance()) > 0) {
+			createBounceRecord(cheque);
+			throw new BusinessException("cheque's balance is greater than the drawer's balance");
+		}
+	}
+
+	private void createBounceRecord(Cheque cheque) {
+		bounceRecordService.save(BounceRecord.create(cheque, LocalDate.now(), "INSUFFICIENT MONEY"));
+		if (bounceRecordService.isAccountBlockedBecauseOfBounce(cheque.getId())) {
+			accountService.block(cheque.getDrawer()
+					.getId());
+		}
+	}
+
+	private void validateIssueDate(Cheque cheque) {
+		if (LocalDate.now()
+				.isAfter(cheque.getIssueDate()
+						.plusMonths(config.getMaxIssueDateMonth()))) {
+			throw new BusinessException("cheque date is too old");
+		}
 	}
 
 	private void validateCheque(Cheque cheque) {

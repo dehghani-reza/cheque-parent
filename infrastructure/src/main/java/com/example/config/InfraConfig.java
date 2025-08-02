@@ -21,4 +21,9 @@ public class InfraConfig {
 		return env.getProperty("cheque.bounce.range-month", Integer.class);
 	}
 
+	public Integer getMaxIssueDateMonth() {
+		return env.getProperty("cheque.bounce.issue-date-month", Integer.class);
+	}
+
+
 }

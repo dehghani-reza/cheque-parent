@@ -2,3 +2,4 @@ cheque:
   bounce:
     max: 3
     range-month: 12
+    issue-date-month: 6
