@@ -4,6 +4,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import lombok.Data;
+
+@Data
 public class MainResponse implements Serializable {
 
 	@Serial
