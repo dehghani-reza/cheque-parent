@@ -23,4 +23,6 @@ public class ChequeResponse extends MainResponse {
 	private ChequeStatus status;
 
 	private String payeeId;
+
+	private Long version;
 }

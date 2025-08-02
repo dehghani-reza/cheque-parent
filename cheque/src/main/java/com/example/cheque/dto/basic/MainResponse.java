@@ -15,5 +15,4 @@ public class MainResponse implements Serializable {
 
 	private LocalDateTime lastUpdate;
 
-	private Long version;
 }
