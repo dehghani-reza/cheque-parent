@@ -37,11 +37,14 @@ public class Cheque extends MainDomain {
 	private BigDecimal amount;
 
 	@Column(name = "DATE", nullable = false, updatable = false)
-	private LocalDate date;
+	private LocalDate issueDate;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STATUS", nullable = false)
 	private ChequeStatus status;
+
+	@Column(name = "PAYEE_ID", nullable = false, updatable = false)
+	private String payeeId;
 
 	@Version
 	private Long version;

@@ -1,0 +1,4 @@
+cheque:
+  bounce:
+    max: 3
+    range-month: 12
