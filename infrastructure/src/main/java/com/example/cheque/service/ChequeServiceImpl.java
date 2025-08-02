@@ -81,23 +81,15 @@ public class ChequeServiceImpl implements ChequeService {
 		if (LocalDate.now()
 				.isAfter(cheque.getIssueDate()
 						.plusMonths(config.getMaxIssueDateMonth()))) {
-			throw new BusinessException("cheque date is too old");
+			throw new BusinessException("cheque date is no ok");
 		}
 	}
 
 	private void validateCheque(Cheque cheque) {
 		validateChequeIssueTime(cheque);
 		validateChequePayee(cheque);
-		validateDrawer(cheque);
-	}
-
-	private void validateDrawer(Cheque cheque) {
-		if (Objects.isNull(cheque.getDrawer()) || Objects.isNull(cheque.getDrawer()
-				.getId()) || !accountService.eligibleForChequeDrawer(cheque.getDrawer()
-				.getId())) {
-			log.warn("drawer not valid");
-			throw new BusinessException("Drawer is blocked");
-		}
+		accountService.checkSubtraction(cheque.getDrawer()
+				.getId(), cheque.getAmount());
 	}
 
 	private void validateChequePayee(Cheque cheque) {

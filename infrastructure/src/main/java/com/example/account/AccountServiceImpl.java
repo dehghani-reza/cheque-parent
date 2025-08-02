@@ -6,7 +6,6 @@ import com.example.domain.account.Account;
 import com.example.domain.account.AccountStatus;
 import com.example.domain.account.repository.AccountRepository;
 import com.example.domain.account.service.AccountService;
-import com.example.domain.cheque.service.BounceRecordService;
 import com.example.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,32 +17,33 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
 
-	private final BounceRecordService bounceRecordService;
-
 	private final AccountRepository accountRepository;
 
 	@Override
-	public boolean eligibleForChequeDrawer(Long accountId) {
-		accountRepository.findById(accountId);
-		return bounceRecordService.isAccountBlockedBecauseOfBounce(accountId);
+	public Account findById(Long accountId) {
+		return accountRepository.findById(accountId)
+				.orElseThrow(() -> new BusinessException("ACCOUNT NOT EXISTS"));
 	}
 
 	@Override
 	public void block(Long accountId) {
-		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new BusinessException("ACCOUNT NOT EXISTS"));
+		Account account = this.findById(accountId);
 		account.setStatus(AccountStatus.BLOCKED);
 		accountRepository.save(account);
 	}
 
 	@Override
 	public void subtractMoney(Long accountId, BigDecimal amount) {
-		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new BusinessException("ACCOUNT NOT EXISTS"));
+		Account account = this.findById(accountId);
 		checkSubtraction(account, amount);
 		account.setBalance(account.getBalance()
 				.subtract(amount));
 		accountRepository.save(account);
+	}
+
+	@Override
+	public void checkSubtraction(Long accountId, BigDecimal amount) {
+		checkSubtraction(this.findById(accountId), amount);
 	}
 
 	private void checkSubtraction(Account account, BigDecimal amount) {
