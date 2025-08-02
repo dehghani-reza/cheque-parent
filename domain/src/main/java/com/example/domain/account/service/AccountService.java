@@ -6,6 +6,8 @@ import com.example.domain.account.Account;
 
 public interface AccountService {
 
+	Account createAccount(Account account);
+
 	Account findById(Long accountId);
 
 	void block(Long accountId);

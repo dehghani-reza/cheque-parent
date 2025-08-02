@@ -20,6 +20,11 @@ public class AccountServiceImpl implements AccountService {
 	private final AccountRepository accountRepository;
 
 	@Override
+	public Account createAccount(Account account) {
+		return accountRepository.save(account);
+	}
+
+	@Override
 	public Account findById(Long accountId) {
 		return accountRepository.findById(accountId)
 				.orElseThrow(() -> new BusinessException("ACCOUNT NOT EXISTS"));
