@@ -27,6 +27,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/auth/**")
 						.permitAll()
+						.requestMatchers("/h2/**")
+						.permitAll()
 						.requestMatchers("/api/cheques/**")
 						.hasRole("TELLER")
 						.anyRequest()
