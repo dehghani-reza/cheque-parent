@@ -13,6 +13,7 @@ import com.example.domain.cheque.repository.ChequeRepository;
 import com.example.domain.cheque.service.BounceRecordService;
 import com.example.domain.cheque.service.ChequeService;
 import com.example.exception.BusinessException;
+import com.example.exception.CheckBounceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +48,8 @@ public class ChequeServiceImpl implements ChequeService {
 		Cheque cheque = chequeRepository.findById(id)
 				.orElseThrow(() -> new BusinessException("cheque not present"));
 		validatePresentRule(cheque);
-		accountService.subtractMoney(cheque.getDrawer().getId(), cheque.getAmount());
+		accountService.subtractMoney(cheque.getDrawer()
+				.getId(), cheque.getAmount());
 		cheque.setStatus(ChequeStatus.PAID);
 		chequeRepository.save(cheque);
 		return true;
@@ -63,7 +65,7 @@ public class ChequeServiceImpl implements ChequeService {
 				.compareTo(cheque.getDrawer()
 						.getBalance()) > 0) {
 			createBounceRecord(cheque);
-			throw new BusinessException("cheque's balance is greater than the drawer's balance");
+			throw new CheckBounceException("cheque's balance is greater than the drawer's balance");
 		}
 	}
 
