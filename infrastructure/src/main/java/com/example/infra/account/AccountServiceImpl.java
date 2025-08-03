@@ -1,4 +1,4 @@
-package com.example.account;
+package com.example.infra.account;
 
 import java.math.BigDecimal;
 
@@ -6,7 +6,7 @@ import com.example.domain.account.Account;
 import com.example.domain.account.AccountStatus;
 import com.example.domain.account.repository.AccountRepository;
 import com.example.domain.account.service.AccountService;
-import com.example.exception.BusinessException;
+import com.example.infra.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package com.example.config;
+package com.example.infra.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

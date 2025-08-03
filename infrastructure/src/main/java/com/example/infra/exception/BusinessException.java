@@ -1,4 +1,4 @@
-package com.example.exception;
+package com.example.infra.exception;
 
 public class BusinessException extends RuntimeException {
 	public BusinessException(String message) {

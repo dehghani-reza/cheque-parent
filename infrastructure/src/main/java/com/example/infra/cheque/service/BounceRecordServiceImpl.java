@@ -1,9 +1,9 @@
-package com.example.cheque.service;
+package com.example.infra.cheque.service;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.config.InfraConfig;
+import com.example.infra.config.InfraConfig;
 import com.example.domain.cheque.BounceRecord;
 import com.example.domain.cheque.repository.BounceRecordRepository;
 import com.example.domain.cheque.service.BounceRecordService;

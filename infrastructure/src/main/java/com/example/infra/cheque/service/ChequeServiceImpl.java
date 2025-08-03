@@ -1,10 +1,10 @@
-package com.example.cheque.service;
+package com.example.infra.cheque.service;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-import com.example.client.SayadClient;
-import com.example.config.InfraConfig;
+import com.example.infra.client.SayadClient;
+import com.example.infra.config.InfraConfig;
 import com.example.domain.account.service.AccountService;
 import com.example.domain.cheque.BounceRecord;
 import com.example.domain.cheque.Cheque;
@@ -12,8 +12,8 @@ import com.example.domain.cheque.ChequeStatus;
 import com.example.domain.cheque.repository.ChequeRepository;
 import com.example.domain.cheque.service.BounceRecordService;
 import com.example.domain.cheque.service.ChequeService;
-import com.example.exception.BusinessException;
-import com.example.exception.CheckBounceException;
+import com.example.infra.exception.BusinessException;
+import com.example.infra.exception.CheckBounceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

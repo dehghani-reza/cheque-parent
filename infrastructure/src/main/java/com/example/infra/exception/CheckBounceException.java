@@ -1,4 +1,4 @@
-package com.example.exception;
+package com.example.infra.exception;
 
 public class CheckBounceException extends BusinessException {
 
